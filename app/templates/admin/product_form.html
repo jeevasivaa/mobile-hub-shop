@@ -67,21 +67,65 @@
         <p class="text-xs text-gray-400 mt-1">One spec per line, e.g. "RAM: 8GB"</p>
       </div>
 
-      <!-- Image Upload -->
-      <div>
-        <label class="form-label" for="product-image">Product Image</label>
+      <!-- ── Image Section ──────────────────────────────────────────── -->
+      <div class="border border-gray-100 rounded-xl p-4 bg-gray-50 space-y-4">
+        <p class="text-sm font-semibold text-gray-700">📸 Product Image</p>
+
+        <!-- Current image preview -->
         {% if product and product.image %}
-          <div class="mb-2">
-            <img src="{{ product.image }}" alt="Current image"
-                 class="w-24 h-24 object-cover rounded-lg border border-gray-200" />
-            <p class="text-xs text-gray-400 mt-1">Current image. Upload new to replace.</p>
+        <div class="flex items-center gap-3">
+          <img src="{{ product.image }}" alt="Current image"
+               data-product-img
+               class="w-20 h-20 object-cover rounded-lg border border-gray-200 shadow-sm" />
+          <div>
+            <p class="text-xs font-medium text-gray-600">Current image</p>
+            <p class="text-xs text-gray-400">Replace using URL or file below</p>
           </div>
+        </div>
         {% endif %}
-        <input type="file" id="product-image" name="image" accept="image/*"
-          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                 file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-        <p class="text-xs text-gray-400 mt-1">JPG, PNG, WebP — max recommended 2MB</p>
+
+        <!-- Option 1: Image URL (recommended for Vercel) -->
+        <div>
+          <label class="form-label" for="product-image-url">
+            🔗 Image URL
+            <span class="ml-1 text-xs font-normal text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">
+              Recommended on Vercel
+            </span>
+          </label>
+          <input type="url" id="product-image-url" name="image_url"
+            value="{{ product.image if product and product.image and product.image.startswith('http') else '' }}"
+            placeholder="https://example.com/phone-image.jpg"
+            class="form-input"
+            oninput="previewImageUrl(this.value)" />
+          <p class="text-xs text-gray-400 mt-1">
+            Paste any image URL from the web (Google Images, brand website, etc.)
+          </p>
+          <!-- Live preview -->
+          <div id="url-preview" class="mt-2 hidden">
+            <img id="url-preview-img" src="" alt="Preview"
+                 class="w-32 h-24 object-cover rounded-lg border border-gray-200" />
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="flex items-center gap-2 text-xs text-gray-400">
+          <div class="flex-1 h-px bg-gray-200"></div>
+          <span>OR upload a file (local dev only)</span>
+          <div class="flex-1 h-px bg-gray-200"></div>
+        </div>
+
+        <!-- Option 2: File Upload (works on local, ephemeral on Vercel) -->
+        <div>
+          <label class="form-label" for="product-image">📁 Upload File</label>
+          <input type="file" id="product-image" name="image" accept="image/*"
+            class="block w-full text-sm text-gray-500
+                   file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                   file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700
+                   hover:file:bg-indigo-100 cursor-pointer" />
+          <p class="text-xs text-orange-500 mt-1">
+            ⚠️ File uploads are ephemeral on Vercel — prefer Image URL above.
+          </p>
+        </div>
       </div>
 
       <!-- Buttons -->
@@ -98,5 +142,19 @@
     </form>
   </div>
 </div>
+
+<script>
+function previewImageUrl(url) {
+  var preview = document.getElementById('url-preview');
+  var img = document.getElementById('url-preview-img');
+  if (url && url.startsWith('http')) {
+    img.src = url;
+    preview.classList.remove('hidden');
+    img.onerror = function() { preview.classList.add('hidden'); };
+  } else {
+    preview.classList.add('hidden');
+  }
+}
+</script>
 
 {% endblock %}

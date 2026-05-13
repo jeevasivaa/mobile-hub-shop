@@ -87,6 +87,7 @@ async def admin_product_create(
     request: Request,
     name: str = Form(...), brand: str = Form(...), price: float = Form(...),
     description: str = Form(""), specifications: str = Form(""), stock: int = Form(0),
+    image_url: str = Form(""),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db), admin: User = Depends(get_current_admin),
 ):
@@ -94,9 +95,16 @@ async def admin_product_create(
         return admin
 
     image_path = None
-    if image and image.filename:
+
+    # Priority 1: use pasted URL (works everywhere including Vercel)
+    if image_url and image_url.startswith("http"):
+        image_path = image_url
+    # Priority 2: file upload (local dev only; ephemeral on Vercel)
+    elif image and image.filename:
         try:
-            image_path = save_upload_file(image, subfolder="products")
+            saved = save_upload_file(image, subfolder="products")
+            if saved:  # None on Vercel (ephemeral)
+                image_path = saved
         except ValueError as e:
             return templates.TemplateResponse(request, "admin/product_form.html", {
                 "admin": admin, "product": None,
@@ -133,6 +141,7 @@ async def admin_product_update(
     request: Request, product_id: int,
     name: str = Form(...), brand: str = Form(...), price: float = Form(...),
     description: str = Form(""), specifications: str = Form(""), stock: int = Form(0),
+    image_url: str = Form(""),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db), admin: User = Depends(get_current_admin),
 ):
@@ -143,17 +152,27 @@ async def admin_product_update(
         raise HTTPException(status_code=404, detail="Product not found")
 
     image_path = None
-    if image and image.filename:
+
+    # Priority 1: pasted URL
+    if image_url and image_url.startswith("http"):
+        image_path = image_url
+    # Priority 2: new file upload
+    elif image and image.filename:
         try:
-            if product.image:
+            if product.image and not product.image.startswith("http"):
                 delete_upload_file(product.image)
-            image_path = save_upload_file(image, subfolder="products")
+            saved = save_upload_file(image, subfolder="products")
+            if saved:
+                image_path = saved
         except ValueError as e:
             return templates.TemplateResponse(request, "admin/product_form.html", {
                 "admin": admin, "product": product,
                 "settings": settings, "error": str(e),
                 "page_title": f"Edit: {product.name}",
             })
+    # Priority 3: keep existing image
+    else:
+        image_path = product.image
 
     data = ProductUpdate(
         name=name, brand=brand, price=price,
@@ -210,15 +229,20 @@ async def admin_offer_create(
     request: Request,
     title: str = Form(...), description: str = Form(""),
     discount_percentage: float = Form(...), active: Optional[str] = Form(None),
+    image_url: str = Form(""),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db), admin: User = Depends(get_current_admin),
 ):
     if isinstance(admin, RedirectResponse):
         return admin
     image_path = None
-    if image and image.filename:
+    if image_url and image_url.startswith("http"):
+        image_path = image_url
+    elif image and image.filename:
         try:
-            image_path = save_upload_file(image, subfolder="offers")
+            saved = save_upload_file(image, subfolder="offers")
+            if saved:
+                image_path = saved
         except ValueError as e:
             return templates.TemplateResponse(request, "admin/offer_form.html", {
                 "admin": admin, "offer": None,
@@ -253,6 +277,7 @@ async def admin_offer_update(
     request: Request, offer_id: int,
     title: str = Form(...), description: str = Form(""),
     discount_percentage: float = Form(...), active: Optional[str] = Form(None),
+    image_url: str = Form(""),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db), admin: User = Depends(get_current_admin),
 ):
@@ -262,17 +287,23 @@ async def admin_offer_update(
     if not offer:
         raise HTTPException(status_code=404, detail="Offer not found")
     image_path = None
-    if image and image.filename:
+    if image_url and image_url.startswith("http"):
+        image_path = image_url
+    elif image and image.filename:
         try:
-            if offer.image:
+            if offer.image and not offer.image.startswith("http"):
                 delete_upload_file(offer.image)
-            image_path = save_upload_file(image, subfolder="offers")
+            saved = save_upload_file(image, subfolder="offers")
+            if saved:
+                image_path = saved
         except ValueError as e:
             return templates.TemplateResponse(request, "admin/offer_form.html", {
                 "admin": admin, "offer": offer,
                 "settings": settings, "error": str(e),
                 "page_title": f"Edit: {offer.title}",
             })
+    else:
+        image_path = offer.image
     data = OfferUpdate(
         title=title, description=description or None,
         discount_percentage=discount_percentage, active=(active == "on"),

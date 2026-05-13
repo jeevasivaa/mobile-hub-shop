@@ -44,19 +44,47 @@
         </label>
       </div>
 
-      <div>
-        <label class="form-label" for="offer-image">Offer Image</label>
+      <!-- ── Image Section ──────────────────────────────────────────── -->
+      <div class="border border-gray-100 rounded-xl p-4 bg-gray-50 space-y-4">
+        <p class="text-sm font-semibold text-gray-700">🖼️ Offer Image</p>
+
         {% if offer and offer.image %}
-          <div class="mb-2">
-            <img src="{{ offer.image }}" alt="Current image"
-                 class="w-32 h-20 object-cover rounded-lg border border-gray-200" />
-            <p class="text-xs text-gray-400 mt-1">Upload new to replace.</p>
-          </div>
+        <div class="flex items-center gap-3">
+          <img src="{{ offer.image }}" alt="Current image"
+               class="w-24 h-16 object-cover rounded-lg border border-gray-200" />
+          <p class="text-xs text-gray-400">Replace using URL or file below</p>
+        </div>
         {% endif %}
-        <input type="file" id="offer-image" name="image" accept="image/*"
-          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
-                 file:rounded-lg file:border-0 file:text-sm file:font-semibold
-                 file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100" />
+
+        <!-- Image URL (recommended) -->
+        <div>
+          <label class="form-label" for="offer-image-url">
+            🔗 Image URL
+            <span class="ml-1 text-xs font-normal text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Recommended</span>
+          </label>
+          <input type="url" id="offer-image-url" name="image_url"
+            value="{{ offer.image if offer and offer.image and offer.image.startswith('http') else '' }}"
+            placeholder="https://example.com/offer-banner.jpg"
+            class="form-input"
+            oninput="previewOfferUrl(this.value)" />
+          <div id="offer-url-preview" class="mt-2 hidden">
+            <img id="offer-preview-img" src="" alt="Preview"
+                 class="w-32 h-20 object-cover rounded-lg border border-gray-200" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs text-gray-400">
+          <div class="flex-1 h-px bg-gray-200"></div><span>OR upload a file</span><div class="flex-1 h-px bg-gray-200"></div>
+        </div>
+
+        <div>
+          <label class="form-label" for="offer-image">📁 Upload File</label>
+          <input type="file" id="offer-image" name="image" accept="image/*"
+            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
+                   file:rounded-lg file:border-0 file:text-sm file:font-semibold
+                   file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 cursor-pointer" />
+          <p class="text-xs text-orange-500 mt-1">⚠️ File uploads are ephemeral on Vercel — prefer Image URL above.</p>
+        </div>
       </div>
 
       <div class="flex gap-3 pt-2">
