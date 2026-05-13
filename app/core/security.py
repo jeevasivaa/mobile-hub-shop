@@ -1,11 +1,12 @@
 """
 app/core/security.py
 ────────────────────
-Password hashing using bcrypt directly (bypasses passlib compatibility issues
-with bcrypt 4.x/5.x) and session token signing using itsdangerous.
+Password hashing using bcrypt directly and session token signing
+using itsdangerous. Compatible with Python 3.9+.
 """
 
 import bcrypt
+from typing import Optional
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from app.core.config import settings
 
@@ -20,10 +21,7 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """
-    Verify a plain-text password against a stored bcrypt hash.
-    Returns True if they match, False otherwise.
-    """
+    """Verify a plain-text password against a bcrypt hash."""
     try:
         return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
     except Exception:
@@ -31,8 +29,7 @@ def verify_password(plain: str, hashed: str) -> bool:
 
 
 # ── Session Tokens ────────────────────────────────────────────────────────────
-# URLSafeTimedSerializer signs data with the SECRET_KEY and embeds a timestamp.
-# Stored as an httpOnly cookie — safe from XSS attacks.
+
 _serializer = URLSafeTimedSerializer(settings.SECRET_KEY)
 
 
@@ -41,16 +38,10 @@ def create_session_token(user_id: int) -> str:
     return _serializer.dumps({"user_id": user_id}, salt="admin-session")
 
 
-def verify_session_token(token: str, max_age: int = 86400) -> dict | None:
+def verify_session_token(token: str, max_age: int = 86400) -> Optional[dict]:
     """
     Decode and verify a session token.
-
-    Args:
-        token:   The signed token string from the cookie.
-        max_age: Token validity in seconds. Default = 24 hours.
-
-    Returns:
-        The decoded payload dict or None if invalid/expired.
+    Returns the payload dict or None if invalid/expired.
     """
     try:
         return _serializer.loads(token, salt="admin-session", max_age=max_age)
