@@ -1,0 +1,15 @@
+<!-- partials/product_cards.html -->
+<!-- HTMX target: replaces the product grid without a full page reload -->
+{% if products %}
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+  {% for product in products %}
+  {% include "partials/product_card_item.html" %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="col-span-full text-center py-20 text-gray-400">
+  <p class="text-5xl mb-4">🔍</p>
+  <p class="text-lg font-medium">No phones found.</p>
+  <p class="text-sm mt-1">Try a different search term or brand.</p>
+</div>
+{% endif %}

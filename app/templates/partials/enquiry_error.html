@@ -1,0 +1,9 @@
+<!-- partials/enquiry_error.html -->
+<div class="rounded-2xl bg-red-50 border border-red-200 p-8 text-center">
+  <div class="text-4xl mb-3">❌</div>
+  <h3 class="text-xl font-bold text-red-800 mb-2">Something went wrong</h3>
+  <p class="text-red-700 mb-4">{{ error | default("Please try again or contact us on WhatsApp.") }}</p>
+  <a href="/contact" class="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-full transition-colors">
+    Try Again
+  </a>
+</div>

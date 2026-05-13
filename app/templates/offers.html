@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-amber-500 to-orange-600 text-white py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-4xl font-extrabold mb-3">🏷️ Special Offers</h1>
+    <p class="text-amber-100 text-lg">Exclusive deals on top mobile phones — for a limited time!</p>
+  </div>
+</section>
+
+<!-- Offers Grid -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+  {% if offers %}
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for offer in offers %}
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow border border-gray-100 group">
+
+      <!-- Offer Image -->
+      <div class="relative h-48 bg-gradient-to-br from-orange-50 to-amber-50 overflow-hidden">
+        {% if offer.image %}
+          <img src="{{ offer.image }}" alt="{{ offer.title }}"
+               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+        {% else %}
+          <div class="w-full h-full flex items-center justify-center">
+            <span class="text-6xl">🎁</span>
+          </div>
+        {% endif %}
+        <!-- Discount Badge -->
+        <div class="absolute top-3 right-3 bg-red-500 text-white font-extrabold text-lg px-3 py-1.5 rounded-xl shadow-lg">
+          {{ offer.discount_percentage | int }}% OFF
+        </div>
+      </div>
+
+      <!-- Offer Info -->
+      <div class="p-5">
+        <h2 class="text-lg font-bold text-gray-900 mb-2">{{ offer.title }}</h2>
+        {% if offer.description %}
+          <p class="text-sm text-gray-500 mb-4 leading-relaxed">{{ offer.description }}</p>
+        {% endif %}
+        <a href="https://wa.me/{{ settings.WHATSAPP_NUMBER | replace('+','') }}?text=Hi%2C%20I%27m%20interested%20in%20the%20offer%3A%20{{ offer.title | urlencode }}"
+           target="_blank"
+           class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-xl transition-colors">
+          💬 Claim on WhatsApp
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-24 text-gray-400">
+    <p class="text-6xl mb-4">🎁</p>
+    <p class="text-xl font-semibold">No active offers right now.</p>
+    <p class="text-sm mt-2">Check back soon for amazing deals!</p>
+  </div>
+  {% endif %}
+</section>
+
+{% endblock %}

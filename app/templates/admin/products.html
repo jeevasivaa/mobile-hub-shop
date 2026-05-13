@@ -1,0 +1,90 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Products{% endblock %}
+{% block page_heading %}Manage Products{% endblock %}
+
+{% block admin_content %}
+
+<div class="flex justify-between items-center mb-6">
+  <p class="text-sm text-gray-500">{{ products | length }} product(s) total</p>
+  <a href="/admin/products/new"
+     class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2">
+    ➕ Add Product
+  </a>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-100">
+        <tr>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Image</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Name</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Brand</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Price</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Stock</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr id="product-row-{{ product.id }}"
+            class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+
+          <!-- Image thumbnail -->
+          <td class="py-3 px-4">
+            {% if product.image %}
+              <img src="{{ product.image }}" alt="{{ product.name }}"
+                   class="w-12 h-12 object-cover rounded-lg" />
+            {% else %}
+              <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                <span class="text-xl">📱</span>
+              </div>
+            {% endif %}
+          </td>
+
+          <td class="py-3 px-4 font-medium text-gray-900 max-w-xs">
+            <div class="truncate">{{ product.name }}</div>
+          </td>
+          <td class="py-3 px-4 text-gray-600">{{ product.brand }}</td>
+          <td class="py-3 px-4 font-semibold text-gray-900">₹{{ "{:,.0f}".format(product.price) }}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-1 rounded-full text-xs font-semibold
+              {% if product.stock == 0 %}bg-red-100 text-red-700
+              {% elif product.stock <= 3 %}bg-orange-100 text-orange-700
+              {% else %}bg-green-100 text-green-700{% endif %}">
+              {{ product.stock }}
+            </span>
+          </td>
+
+          <!-- Actions -->
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <a href="/admin/products/{{ product.id }}/edit"
+                 class="text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-medium px-3 py-1.5 rounded-lg transition-colors">
+                Edit
+              </a>
+              <button
+                hx-delete="/admin/products/{{ product.id }}"
+                hx-target="#product-row-{{ product.id }}"
+                hx-swap="outerHTML swap:300ms"
+                hx-confirm="Delete '{{ product.name }}'? This cannot be undone."
+                class="text-xs bg-red-100 hover:bg-red-200 text-red-700 font-medium px-3 py-1.5 rounded-lg transition-colors">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="text-center py-16 text-gray-400">
+            <p class="text-4xl mb-2">📱</p>
+            No products yet. <a href="/admin/products/new" class="text-primary underline">Add one!</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-indigo-700 to-purple-800 text-white py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-4xl font-extrabold mb-3">About {{ settings.APP_NAME }}</h1>
+    <p class="text-indigo-200 text-lg max-w-2xl mx-auto">
+      Your trusted local mobile phone store — serving the community with passion and expertise.
+    </p>
+  </div>
+</section>
+
+<!-- Story -->
+<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="grid md:grid-cols-2 gap-12 items-center">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Story</h2>
+      <p class="text-gray-600 leading-relaxed mb-4">
+        {{ settings.APP_NAME }} was founded with a simple mission: make it easy for everyone to find
+        the perfect mobile phone at an honest price. We are a local business passionate about technology
+        and customer satisfaction.
+      </p>
+      <p class="text-gray-600 leading-relaxed">
+        Whether you're looking for the latest flagship or a budget-friendly option, our knowledgeable
+        staff will guide you to the best choice for your needs and budget.
+      </p>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      {% for stat in [('500+', 'Products'), ('20+', 'Brands'), ('5★', 'Rating'), ('1000+', 'Happy Customers')] %}
+      <div class="bg-indigo-50 rounded-2xl p-6 text-center">
+        <p class="text-3xl font-extrabold text-primary">{{ stat[0] }}</p>
+        <p class="text-sm text-gray-600 mt-1">{{ stat[1] }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Values -->
+<section class="bg-gray-50 py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">What We Stand For</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+      {% for val in [
+        ('🎯', 'Customer First', 'We put your needs before anything else. Our staff listens carefully and recommends honestly.'),
+        ('💎', 'Quality Assured', 'Every device we sell is genuine, warranty-backed, and thoroughly checked.'),
+        ('🤝', 'Transparent Pricing', 'No hidden charges. What you see is what you pay.'),
+      ] %}
+      <div class="bg-white rounded-2xl p-8 shadow-sm text-center hover:shadow-md transition-shadow">
+        <div class="text-5xl mb-4">{{ val[0] }}</div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">{{ val[1] }}</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">{{ val[2] }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Location Map -->
+<section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Find Us</h2>
+  <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+    <div class="p-6 flex flex-col sm:flex-row gap-4 items-start">
+      <div>
+        <p class="font-semibold text-gray-900">📍 {{ settings.SHOP_ADDRESS }}</p>
+        <p class="text-sm text-gray-500 mt-1">🕒 Monday – Saturday: 10:00 AM – 8:00 PM</p>
+        <p class="text-sm text-gray-500">📱 {{ settings.WHATSAPP_NUMBER }}</p>
+      </div>
+    </div>
+    <!-- Google Maps Embed -->
+    <iframe
+      src="{{ settings.GOOGLE_MAPS_EMBED_URL }}"
+      width="100%" height="350"
+      style="border:0;" allowfullscreen="" loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      class="w-full">
+    </iframe>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Enquiries{% endblock %}
+{% block page_heading %}Customer Enquiries{% endblock %}
+
+{% block admin_content %}
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-100">
+        <tr>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Name</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Phone</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Message</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Date</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in enquiries %}
+        <tr id="enquiry-row-{{ e.id }}" class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <td class="py-3 px-4 font-semibold text-gray-900">{{ e.customer_name }}</td>
+          <td class="py-3 px-4">
+            <a href="https://wa.me/{{ e.phone | replace('+','') | replace(' ','') }}"
+               target="_blank"
+               class="text-green-600 hover:underline font-medium flex items-center gap-1">
+              📱 {{ e.phone }}
+            </a>
+          </td>
+          <td class="py-3 px-4 text-gray-600 max-w-xs">
+            <div class="line-clamp-2">{{ e.message }}</div>
+          </td>
+          <td class="py-3 px-4 text-gray-400 text-xs whitespace-nowrap">
+            {{ e.created_at.strftime('%d %b %Y, %I:%M %p') }}
+          </td>
+          <td class="py-3 px-4">
+            <button
+              hx-delete="/admin/enquiries/{{ e.id }}"
+              hx-target="#enquiry-row-{{ e.id }}"
+              hx-swap="outerHTML swap:300ms"
+              hx-confirm="Delete this enquiry from {{ e.customer_name }}?"
+              class="text-xs bg-red-100 hover:bg-red-200 text-red-700 font-medium px-3 py-1.5 rounded-lg transition-colors">
+              Delete
+            </button>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center py-16 text-gray-400">
+            <p class="text-4xl mb-2">📩</p>
+            No enquiries yet.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

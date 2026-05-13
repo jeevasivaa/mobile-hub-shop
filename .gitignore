@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+
+# Virtual environment
+venv/
+env/
+.env
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads (keep directory, ignore contents)
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Alembic (keep versions tracked)
+# alembic/versions/  <- tracked intentionally
+
+# Test cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Vercel build output
+.vercel/
+.output/
+
+# Temp scripts
+fix_templates.py

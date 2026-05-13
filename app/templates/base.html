@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ page_title | default(settings.APP_NAME) }}{% endblock %}</title>
+  <meta name="description" content="{{ meta_description | default('Best mobile phones at great prices.') }}" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: { DEFAULT: '#6366f1', dark: '#4f46e5', light: '#a5b4fc' },
+            accent:  { DEFAULT: '#f59e0b', dark: '#d97706' },
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/custom.css" />
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased">
+
+  <!-- Navbar -->
+  {% include "components/navbar.html" %}
+
+  <!-- Page Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  {% include "components/footer.html" %}
+
+  <!-- Floating WhatsApp Button -->
+  {% include "components/whatsapp_btn.html" %}
+
+  <!-- Custom JS -->
+  <script src="/static/js/app.js"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

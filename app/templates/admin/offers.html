@@ -1,0 +1,70 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Offers{% endblock %}
+{% block page_heading %}Manage Offers{% endblock %}
+
+{% block admin_content %}
+
+<div class="flex justify-between items-center mb-6">
+  <p class="text-sm text-gray-500">{{ offers | length }} offer(s) total</p>
+  <a href="/admin/offers/new"
+     class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2">
+    ➕ Add Offer
+  </a>
+</div>
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-100">
+        <tr>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Title</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Discount</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Status</th>
+          <th class="text-left py-3 px-4 text-gray-500 font-semibold">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for offer in offers %}
+        <tr id="offer-row-{{ offer.id }}" class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <td class="py-3 px-4 font-medium text-gray-900">{{ offer.title }}</td>
+          <td class="py-3 px-4">
+            <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded-full">
+              {{ offer.discount_percentage | int }}% OFF
+            </span>
+          </td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-1 rounded-full text-xs font-semibold
+              {% if offer.active %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-500{% endif %}">
+              {{ 'Active' if offer.active else 'Inactive' }}
+            </span>
+          </td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <a href="/admin/offers/{{ offer.id }}/edit"
+                 class="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 font-medium px-3 py-1.5 rounded-lg transition-colors">
+                Edit
+              </a>
+              <button
+                hx-delete="/admin/offers/{{ offer.id }}"
+                hx-target="#offer-row-{{ offer.id }}"
+                hx-swap="outerHTML swap:300ms"
+                hx-confirm="Delete offer '{{ offer.title }}'?"
+                class="text-xs bg-red-100 hover:bg-red-200 text-red-700 font-medium px-3 py-1.5 rounded-lg transition-colors">
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-center py-16 text-gray-400">
+            No offers yet. <a href="/admin/offers/new" class="text-amber-500 underline">Add one!</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
