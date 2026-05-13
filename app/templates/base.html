@@ -7,7 +7,7 @@
   <meta name="description" content="{{ meta_description | default('Best mobile phones at great prices.') }}" />
   <meta name="robots" content="index, follow" />
 
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS CDN (Play CDN — works everywhere) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,8 +32,96 @@
   <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/static/css/custom.css" />
+  <!-- Critical CSS inlined — ensures styles work on Vercel even without /static -->
+  <style>
+    /* ── Navigation ─────────────────────────────────────────────────── */
+    .nav-link {
+      padding: 0.375rem 0.875rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4b5563;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .nav-link:hover { background-color: #f3f4f6; color: #6366f1; }
+    .nav-link.active { background-color: #eef2ff; color: #6366f1; font-weight: 600; }
+
+    .mobile-nav-link {
+      display: block;
+      padding: 0.625rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: #374151;
+      transition: background-color 0.15s;
+      text-decoration: none;
+    }
+    .mobile-nav-link:hover { background-color: #f3f4f6; color: #6366f1; }
+
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    .footer-link { color: #9ca3af; text-decoration: none; transition: color 0.15s; }
+    .footer-link:hover { color: #f9fafb; }
+
+    /* ── Admin Sidebar ───────────────────────────────────────────────── */
+    .admin-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #c7d2fe;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .admin-nav-link:hover { background-color: rgba(255,255,255,0.1); color: #fff; }
+    .admin-nav-link.active { background-color: rgba(255,255,255,0.15); color: #fff; font-weight: 600; }
+
+    /* ── Form Inputs ─────────────────────────────────────────────────── */
+    .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem; }
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      background-color: #fff;
+    }
+    .form-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+
+    /* ── HTMX Loading ────────────────────────────────────────────────── */
+    .htmx-indicator { display: none; }
+    .htmx-request .htmx-indicator,
+    .htmx-request.htmx-indicator { display: inline-flex; }
+
+    /* ── Product Card ────────────────────────────────────────────────── */
+    .product-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .product-card:hover { transform: translateY(-2px); }
+
+    /* ── Line Clamp ──────────────────────────────────────────────────── */
+    .line-clamp-2 {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* ── Page Fade In ────────────────────────────────────────────────── */
+    body { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Image Fallback ──────────────────────────────────────────────── */
+    img.img-fallback-applied {
+      display: none;
+    }
+  </style>
 
   {% block extra_head %}{% endblock %}
 </head>
@@ -53,8 +141,24 @@
   <!-- Floating WhatsApp Button -->
   {% include "components/whatsapp_btn.html" %}
 
-  <!-- Custom JS -->
-  <script src="/static/js/app.js"></script>
+  <!-- Image fallback: show placeholder SVG when image URL fails (e.g. local uploads on Vercel) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('img[data-product-img]').forEach(function(img) {
+        img.onerror = function() {
+          // Replace broken image with inline SVG placeholder
+          var parent = this.parentElement;
+          var placeholder = document.createElement('div');
+          placeholder.className = 'w-full h-full bg-gradient-to-br from-indigo-50 to-purple-100 flex items-center justify-center';
+          placeholder.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>';
+          parent.replaceChild(placeholder, this);
+        };
+      });
+    });
+  </script>
+
+  <!-- Custom JS (optional enhancement) -->
+  <script src="/static/js/app.js" onerror="console.log('Custom JS not loaded')"></script>
   {% block extra_scripts %}{% endblock %}
 </body>
 </html>
